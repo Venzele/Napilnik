@@ -8,19 +8,38 @@ namespace App1
 {
     class Weapon
     {
-        public int Damage;
-        public int Bullets;
+        private int _damage;
+        private int _bullets;
 
         public void Fire(Player player)
         {
-            player.Health -= Damage;
-            Bullets -= 1;
+            if (_bullets > 0)
+            {
+                player.TakeDamage(_damage);
+                _bullets -= 1;
+            }
         }
     }
 
     class Player
     {
-        public int Health;
+        private bool _isAlive = true;
+
+        public int Health { get; private set; }
+
+        public void TakeDamage(int damage)
+        {
+            if (damage < 0)
+                throw new InvalidOperationException();
+
+            if (_isAlive)
+            {
+                Health -= damage;
+
+                if (Health <= 0)
+                    _isAlive = false;
+            }
+        }
     }
 
     class Bot
