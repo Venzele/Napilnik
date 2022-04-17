@@ -6,49 +6,34 @@ using System.Threading.Tasks;
 
 namespace App1
 {
-    class Weapon
+    class Program
     {
-        private int _damage;
-        private int _bullets;
-
-        public void Fire(Player player)
+        static void Main(string[] args)
         {
-            if (_bullets > 0)
-            {
-                player.TakeDamage(_damage);
-                _bullets -= 1;
-            }
-        }
-    }
+            Good iPhone12 = new Good("IPhone 12");
+            Good iPhone11 = new Good("IPhone 11");
 
-    class Player
-    {
-        private bool _isAlive = true;
+            Warehouse warehouse = new Warehouse();
 
-        public int Health { get; private set; }
+            Shop shop = new Shop(warehouse);
 
-        public void TakeDamage(int damage)
-        {
-            if (damage < 0)
-                throw new InvalidOperationException();
+            warehouse.DeliverGoods(iPhone12, 10);
+            warehouse.DeliverGoods(iPhone11, 1);
 
-            if (_isAlive)
-            {
-                Health -= damage;
+            Console.WriteLine("На складе:");
+            warehouse.ShowLeftovers();
 
-                if (Health <= 0)
-                    _isAlive = false;
-            }
-        }
-    }
+            Cart cart = shop.Cart();
+            cart.AddGoods(iPhone12, 4);
+            cart.AddGoods(iPhone11, 3);
 
-    class Bot
-    {
-        public Weapon Weapon;
+            Console.WriteLine("\nВ корзине:");
+            cart.ShowGoods();
 
-        public void OnSeePlayer(Player player)
-        {
-            Weapon.Fire(player);
+            Console.WriteLine();
+            Console.WriteLine(cart.Order().Paylink);
+
+            cart.AddGoods(iPhone12, 9);
         }
     }
 }
