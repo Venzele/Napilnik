@@ -6,69 +6,37 @@ using System.Threading.Tasks;
 
 namespace App1
 {
-    class Warehouse
+    class Warehouse : Container
     {
-        private List<Good> _goods = new List<Good>();
-        private List<Good> _assortmentGoods = new List<Good>();
-
-        public void DeliverGoods(Good good, int quantity)
+        public override void Deliver(Good good, int quantity)
         {
             if (quantity <= 0)
-            {
-                throw new ArgumentOutOfRangeException(paramName: "Количество должно быть больше 0.");
-            }
+                throw new ArgumentOutOfRangeException(paramName: "Количество должно быть больше 0");
 
-            for (int i = 0; i < quantity; i++)
-            {
-                _goods.Add(good);
-            }
-
-            ChangeAssortmentGoods();
+            Add(good, quantity);
+            UpdateAssortmentGoods();
         }
 
-        public bool ShipGoods(Good shippedGood, int quantity)
+        public bool Ship(Good selectedGood, int quantity)
         {
-            if (shippedGood == null)
-            {
-                return false;
-                throw new ArgumentNullException(nameof(shippedGood));
-            }
+            if (selectedGood == null)
+                throw new ArgumentNullException(nameof(selectedGood));
 
-            var definiteGoods = _goods.Where(good => good.Label == shippedGood.Label).ToList();
-
-            if (definiteGoods.Count <= 0)
+            if (Count(selectedGood.Label) <= 0)
             {
-                Console.WriteLine($"\n{shippedGood.Label} нет на складе!");
-                return false;
+                Console.WriteLine($"\n{selectedGood.Label} нет на складе!");
             }
-            else if (definiteGoods.Count < quantity)
+            else if (Count(selectedGood.Label) < quantity)
             {
-                Console.WriteLine($"\n{shippedGood.Label} недостаточно на складе!");
-                return false;
+                Console.WriteLine($"\n{selectedGood.Label} недостаточно на складе!");
             }
-            else
+            else if (Count(selectedGood.Label) >= quantity)
             {
-                for (int i = 0; i < quantity; i++)
-                {
-                    _goods.Remove(shippedGood);
-                }
-
+                Remove(selectedGood, quantity);
                 return true;
             }
-        }
 
-        public void ShowLeftovers()
-        {
-            foreach (var item in _assortmentGoods)
-            {
-                int quantitySameGoods = _goods.Count(good => good.Label == item.Label);
-                Console.WriteLine($"{item.Label} - {quantitySameGoods}шт");
-            }
-        }
-
-        private void ChangeAssortmentGoods()
-        {
-            _assortmentGoods = _goods.Distinct().ToList();
+            return false;
         }
     }
 }

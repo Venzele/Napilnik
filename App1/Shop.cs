@@ -8,8 +8,8 @@ namespace App1
 {
     class Shop
     {
-        private Warehouse _warehouse;
-        private Cart _cart;
+        private readonly Warehouse _warehouse;
+        private readonly Cart _cart;
 
         public Shop (Warehouse warehouse)
         {
@@ -20,6 +20,18 @@ namespace App1
         public Cart Cart()
         {
             return _cart;
+        }
+
+        public void ShowLeftovers()
+        {
+            foreach (var label in _warehouse.GiveLablesAssortment())
+                Console.WriteLine($"{label} - {_warehouse.Count(label)}шт");
+        }
+
+        public void ShowGoods()
+        {
+            foreach (var label in _cart.GiveLablesAssortment())
+                Console.WriteLine($"{label} - {_cart.Count(label)}шт");
         }
     }
 }

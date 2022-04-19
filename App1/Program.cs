@@ -17,23 +17,23 @@ namespace App1
 
             Shop shop = new Shop(warehouse);
 
-            warehouse.DeliverGoods(iPhone12, 10);
-            warehouse.DeliverGoods(iPhone11, 1);
+            warehouse.Deliver(iPhone12, 10);
+            warehouse.Deliver(iPhone11, 1);
 
             Console.WriteLine("На складе:");
-            warehouse.ShowLeftovers();
+            shop.ShowLeftovers();
 
             Cart cart = shop.Cart();
-            cart.AddGoods(iPhone12, 4);
-            cart.AddGoods(iPhone11, 3);
+            cart.Deliver(iPhone12, 4);
+            cart.Deliver(iPhone11, 3);
 
             Console.WriteLine("\nВ корзине:");
-            cart.ShowGoods();
+            shop.ShowGoods();
 
             Console.WriteLine();
             Console.WriteLine(cart.Order().Paylink);
 
-            cart.AddGoods(iPhone12, 9);
+            cart.Deliver(iPhone12, 9);
         }
     }
 }
