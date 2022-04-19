@@ -6,34 +6,61 @@ using System.Threading.Tasks;
 
 namespace App1
 {
-    class Program
+    class Weapon
     {
-        static void Main(string[] args)
+        private readonly int _damage;
+        private int _bullets;
+        private int _bulletsPerShot;
+
+        public bool TryFire(Player player)
         {
-            Good iPhone12 = new Good("IPhone 12");
-            Good iPhone11 = new Good("IPhone 11");
+            if (player == null)
+                throw new ArgumentNullException(nameof(player));
 
-            Warehouse warehouse = new Warehouse();
+            if (_bullets >= _bulletsPerShot)
+            {
+                player.TakeDamage(_damage);
+                _bullets -= _bulletsPerShot;
+                return true;
+            }
 
-            Shop shop = new Shop(warehouse);
+            return false;
+        }
+    }
 
-            warehouse.Deliver(iPhone12, 10);
-            warehouse.Deliver(iPhone11, 1);
+    class Player
+    {
+        public int Health { get; private set; }
+        public bool IsAlive { get; private set; }
 
-            Console.WriteLine("На складе:");
-            shop.ShowLeftovers();
+        public void TakeDamage(int damage)
+        {
+            if (damage < 0)
+                throw new ArgumentOutOfRangeException(paramName: "Урон должен быть больше 0");
 
-            Cart cart = shop.Cart();
-            cart.Deliver(iPhone12, 4);
-            cart.Deliver(iPhone11, 3);
+            if (IsAlive)
+            {
+                Health -= damage;
 
-            Console.WriteLine("\nВ корзине:");
-            shop.ShowGoods();
+                if (Health <= 0)
+                    IsAlive = false;
+            }
+        }
+    }
 
-            Console.WriteLine();
-            Console.WriteLine(cart.Order().Paylink);
+    class Bot
+    {
+        private Weapon _weapon;
 
-            cart.Deliver(iPhone12, 9);
+        public void OnSeePlayer(Player player)
+        {
+            if (player == null)
+                throw new ArgumentNullException(nameof(player));
+
+            if (player.IsAlive)
+            {
+                _weapon.TryFire(player);
+            }
         }
     }
 }
