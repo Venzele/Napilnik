@@ -52,7 +52,6 @@
     <Compile Include="Shop.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Warehouse.cs" />
-    <Compile Include="Weapon.cs" />
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
