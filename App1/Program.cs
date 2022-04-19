@@ -8,47 +8,59 @@ namespace App1
 {
     class Weapon
     {
-        private int _damage;
+        private readonly int _damage;
         private int _bullets;
+        private int _bulletsPerShot;
 
-        public void Fire(Player player)
+        public bool TryFire(Player player)
         {
-            if (_bullets > 0)
+            if (player == null)
+                throw new ArgumentNullException(nameof(player));
+
+            if (_bullets >= _bulletsPerShot)
             {
                 player.TakeDamage(_damage);
-                _bullets -= 1;
+                _bullets -= _bulletsPerShot;
+                return true;
             }
+
+            return false;
         }
     }
 
     class Player
     {
-        private bool _isAlive = true;
-
         public int Health { get; private set; }
+        public bool IsAlive { get; private set; }
 
         public void TakeDamage(int damage)
         {
             if (damage < 0)
-                throw new InvalidOperationException();
+                throw new ArgumentOutOfRangeException(paramName: "Урон должен быть больше 0");
 
-            if (_isAlive)
+            if (IsAlive)
             {
                 Health -= damage;
 
                 if (Health <= 0)
-                    _isAlive = false;
+                    IsAlive = false;
             }
         }
     }
 
     class Bot
     {
-        public Weapon Weapon;
+        private Weapon _weapon;
 
         public void OnSeePlayer(Player player)
         {
-            Weapon.Fire(player);
+            if (player == null)
+                throw new ArgumentNullException(nameof(player));
+
+            if (player.IsAlive)
+            {
+                _weapon.TryFire(player);
+            }
         }
     }
 }
