@@ -6,61 +6,34 @@ using System.Threading.Tasks;
 
 namespace App1
 {
-    class Weapon
+    class Program
     {
-        private readonly int _damage;
-        private int _bullets;
-        private int _bulletsPerShot;
-
-        public bool TryFire(Player player)
+        static void Main(string[] args)
         {
-            if (player == null)
-                throw new ArgumentNullException(nameof(player));
+            Good iPhone12 = new Good("IPhone 12");
+            Good iPhone11 = new Good("IPhone 11");
 
-            if (_bullets >= _bulletsPerShot)
-            {
-                player.TakeDamage(_damage);
-                _bullets -= _bulletsPerShot;
-                return true;
-            }
+            Warehouse warehouse = new Warehouse();
 
-            return false;
-        }
-    }
+            Shop shop = new Shop(warehouse);
 
-    class Player
-    {
-        public int Health { get; private set; }
-        public bool IsAlive { get; private set; }
+            warehouse.Deliver(iPhone12, 10);
+            warehouse.Deliver(iPhone11, 1);
 
-        public void TakeDamage(int damage)
-        {
-            if (damage < 0)
-                throw new ArgumentOutOfRangeException(paramName: "Урон должен быть больше 0");
+            Console.WriteLine("На складе:");
+            shop.ShowLeftovers(warehouse.AssortmentGoods, warehouse.Goods);
 
-            if (IsAlive)
-            {
-                Health -= damage;
+            Cart cart = shop.Cart();
+            cart.Deliver(iPhone12, 4);
+            cart.Deliver(iPhone11, 3);
 
-                if (Health <= 0)
-                    IsAlive = false;
-            }
-        }
-    }
+            Console.WriteLine("\nВ корзине:");
+            shop.ShowLeftovers(cart.AssortmentGoods, cart.Goods);
 
-    class Bot
-    {
-        private Weapon _weapon;
+            Console.WriteLine();
+            Console.WriteLine(cart.Order().Paylink);
 
-        public void OnSeePlayer(Player player)
-        {
-            if (player == null)
-                throw new ArgumentNullException(nameof(player));
-
-            if (player.IsAlive)
-            {
-                _weapon.TryFire(player);
-            }
+            cart.Deliver(iPhone12, 9);
         }
     }
 }

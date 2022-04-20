@@ -17,21 +17,14 @@ namespace App1
             _assortmentGoods = new List<Good>();
         }
 
+        public IReadOnlyList<Good> Goods => _goods;
+        public IReadOnlyList<Good> AssortmentGoods => _assortmentGoods;
+
         public abstract void Deliver(Good good, int quantity);
 
         public int Count(string label)
         {
             return _goods.Count(good => good.Label == label);
-        }
-
-        public List<string> GiveLablesAssortment()
-        {
-            List<string> assortmentLabel = new List<string>();
-
-            for (int i = 0; i < _assortmentGoods.Count; i++)
-                assortmentLabel.Add(_assortmentGoods[i].Label);
-
-            return assortmentLabel;
         }
 
         protected void UpdateAssortmentGoods()
@@ -53,7 +46,7 @@ namespace App1
             if (good == null)
                 throw new ArgumentNullException(nameof(good));
 
-            if (quantity > _goods.Count)
+            if (quantity > Count(good.Label))
                 throw new ArgumentOutOfRangeException(paramName: "Количество должно быть не больше списка");
 
             for (int i = 0; i < quantity; i++)

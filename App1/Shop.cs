@@ -22,16 +22,13 @@ namespace App1
             return _cart;
         }
 
-        public void ShowLeftovers()
+        public void ShowLeftovers(IReadOnlyList<Good> assortmentGoods, IReadOnlyList<Good> goods)
         {
-            foreach (var label in _warehouse.GiveLablesAssortment())
-                Console.WriteLine($"{label} - {_warehouse.Count(label)}шт");
-        }
-
-        public void ShowGoods()
-        {
-            foreach (var label in _cart.GiveLablesAssortment())
-                Console.WriteLine($"{label} - {_cart.Count(label)}шт");
+            foreach (var good in assortmentGoods)
+            {
+                int quantity = goods.Count(selectedGood => selectedGood.Label == good.Label);
+                Console.WriteLine($"{good.Label} - {quantity}шт");
+            }
         }
     }
 }
