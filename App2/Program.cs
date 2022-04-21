@@ -25,7 +25,7 @@ namespace App2
 
         class Pathfinder
         {
-            private readonly ILogger _logger; 
+            private readonly ILogger _logger;
 
             public Pathfinder(ILogger logger)
             {
