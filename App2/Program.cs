@@ -10,111 +10,139 @@ namespace App2
     {
         static void Main(string[] args)
         {
-            Pathfinder pathfinderFile = new Pathfinder(new FileLogWritter());
-            Pathfinder pathfinderConsole = new Pathfinder(new ConsoleLogWritter());
-            Pathfinder pathfinderFileToFriday = new Pathfinder(new SecureLogWritter(new FileLogWritter(), new Day(DayOfWeek.Friday)));
-            Pathfinder pathfinderConsoleToFriday = new Pathfinder(new SecureLogWritter(new ConsoleLogWritter(), new Day(DayOfWeek.Friday)));
-            Pathfinder pathfinderSeveralLogs = new Pathfinder(new SeveralLogsWritter(new ConsoleLogWritter(), new SecureLogWritter(new FileLogWritter(), new Day(DayOfWeek.Friday))));
+            Order order = new Order(1234567890, 12000, "RUB");
 
-            pathfinderFile.Find();
-            pathfinderConsole.Find();
-            pathfinderFileToFriday.Find();
-            pathfinderConsoleToFriday.Find();
-            pathfinderSeveralLogs.Find();
+            PaymentSystem payPal = new PaymentSystem(new PayPal(new PayPalHash()));
+            PaymentSystem webMoney = new PaymentSystem(new WebMoney(new WebMoneyHash()));
+            PaymentSystem rapida = new PaymentSystem(new Rapida(new RapidaHash()));
+
+            Console.WriteLine(payPal.Show(order));
+            Console.WriteLine();
+            Console.WriteLine(webMoney.Show(order));
+            Console.WriteLine();
+            Console.WriteLine(rapida.Show(order));
+        }
+    }
+
+    public class Order
+    {
+        private readonly int _id;
+        private readonly int _amount;
+        private readonly string _currency;
+
+        public Order(int id, int amount, string currency) => (_id, _amount, _currency) = (id, amount, currency);
+
+        public int Id => _id;
+
+        public int Amount => _amount;
+
+        public string Currency => _currency;
+    }
+
+    public interface IPaymentSystem
+    {
+        string GetPayingLink(Order order);
+    }
+
+    public interface IHash
+    {
+        string Create(Order order);
+    }
+
+    public class PaymentSystem
+    {
+        private readonly IPaymentSystem _paymentSystem;
+
+        public PaymentSystem(IPaymentSystem paymentSystem)
+        {
+            _paymentSystem = paymentSystem;
         }
 
-        public class Pathfinder
+        public string Show(Order order)
         {
-            private readonly ILogger _logger;
+            return _paymentSystem.GetPayingLink(order);
+        }
+}
 
-            public Pathfinder(ILogger logger)
-            {
-                _logger = logger;
-            }
+    public class PayPal : IPaymentSystem
+    {
+        private readonly IHash _hash;
+        private readonly string _address;
 
-            public void Find()
-            {
-                _logger.WriteError("Сообщение");
-            }
+        public PayPal(IHash hash)
+        {
+            _hash = hash;
+            _address = "pay.system1.ru/order?";
         }
 
-        public class Day
+        public string GetPayingLink(Order order)
         {
-            private DayOfWeek _title;
-            private bool _isMatch => DateTime.Now.DayOfWeek == _title;
+            return _address + "amount=" + order.Amount + order.Currency + "&hash={" + _hash.Create(order) + "}";
+        }
+    }
 
-            public bool IsMatch => _isMatch;
+    public class WebMoney : IPaymentSystem
+    {
+        private readonly IHash _hash;
+        private readonly string _address;
 
-            public Day(DayOfWeek title)
-            {
-                _title = title;
-            }
+        public WebMoney(IHash hash)
+        {
+            _hash = hash;
+            _address = "order.system2.ru/pay?";
         }
 
-        public class ConsoleLogWritter : ILogger
+        public string GetPayingLink(Order order)
         {
-            public void WriteError(string message)
-            {
-                Console.WriteLine(message);
-            }
+            return _address + "hash={" + _hash.Create(order) + "}";
+        }
+    }
+
+    public class Rapida : IPaymentSystem
+    {
+        private readonly IHash _hash;
+        private readonly string _address;
+
+        public Rapida(IHash hash)
+        {
+            _hash = hash;
+            _address = "system3.com/pay?";
         }
 
-        public class FileLogWritter : ILogger
+        public string GetPayingLink(Order order)
         {
-            public void WriteError(string message)
-            {
-                File.WriteAllText("log.txt", message);
-            }
+            return _address + "amount=" + order.Amount + "&curency=" + order.Currency + "&hash={" + _hash.Create(order) + "}";
+        }
+    }
+
+    public class PayPalHash : IHash
+    {
+        public string Create(Order order)
+        {
+            return $"{order.Id}";
+        }
+    }
+
+    public class WebMoneyHash : IHash
+    {
+        public string Create(Order order)
+        {
+            return $"{order.Id} + {order.Amount}{order.Currency}";
+        }
+    }
+
+    public class RapidaHash : IHash
+    {
+        private readonly string _secretKey;
+
+        public RapidaHash()
+        {
+            _secretKey = "SecretKey";
         }
 
-        public static class File
+        public string Create(Order order)
         {
-            public static void WriteAllText(string log, string message)
-            {
-                Console.WriteLine(log);
-                Console.WriteLine(message);
-            }
-        }
-
-        public class SeveralLogsWritter : ILogger
-        {
-            private ILogger[] _loggers;
-
-            public SeveralLogsWritter(params ILogger[] loggers)
-            {
-                _loggers = loggers;
-            }
-
-            public void WriteError(string message)
-            {
-                foreach (var logger in _loggers)
-                {
-                    logger.WriteError(message);
-                }
-            }
-        }
-
-        public class SecureLogWritter : ILogger
-        {
-            private ILogger _logger;
-            private Day _day;
-
-            public SecureLogWritter(ILogger logger, Day day)
-            {
-                _logger = logger;
-                _day = day;
-            }
-
-            public void WriteError(string message)
-            {
-                if (_day.IsMatch)
-                    _logger.WriteError(message);
-            }
-        }
-
-        public interface ILogger
-        {
-            void WriteError(string message);
+            return $"{order.Amount}{order.Currency} + {order.Id} + {_secretKey}";
         }
     }
 }
