@@ -8,13 +8,14 @@ namespace App2
 {
     class Program
     {
-        public static int Enumerate(int[] array, int element)
+        class Weapon
         {
-            for (int i = 0; i < array.Length; i++)
-                if (array[i] == element)
-                    return i;
+            private int _bullets;
+            private int _bulletsPerShot;
 
-            return -1;
+            public bool CanShoot() => _bullets >= _bulletsPerShot && _bulletsPerShot > 0;
+
+            public void Shoot() => _bullets -= _bulletsPerShot;
         }
     }
 }
