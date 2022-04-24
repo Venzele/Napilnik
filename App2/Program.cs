@@ -8,12 +8,19 @@ namespace App2
 {
     class Program
     {
-        class CharacteristicsPlayer { }
-        class Gun { }
-        class Follower { }
-        class Counter
+        public static void GenerateNewObject()
         {
-            public IReadOnlyCollection<Unit> QuantityUnits { get; private set; }
+            //Создание объекта на карте
+        }
+
+        public static void RandomizeChance()
+        {
+            _chance = Random.Range(0, 100);
+        }
+
+        public static int CountSalary(int hoursWorked)
+        {
+            return _hourlyRate * hoursWorked;
         }
     }
 }
