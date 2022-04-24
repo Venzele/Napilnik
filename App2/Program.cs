@@ -23,7 +23,7 @@ namespace App2
             pathfinderSeveralLogs.Find();
         }
 
-        class Pathfinder
+        public class Pathfinder
         {
             private readonly ILogger _logger;
 
@@ -38,25 +38,45 @@ namespace App2
             }
         }
 
-        class Day
+        public class Day
         {
-            private DayOfWeek _day;
+            private DayOfWeek _title;
+            private bool _isMatch => DateTime.Now.DayOfWeek == _title;
 
-            public Day(DayOfWeek day)
+            public bool IsMatch => _isMatch;
+
+            public Day(DayOfWeek title)
             {
-                _day = day;
-            }
-
-            public bool IsMatch()
-            {
-                if (DateTime.Now.DayOfWeek == _day)
-                    return true;
-
-                return false;
+                _title = title;
             }
         }
 
-        class SeveralLogsWritter : ILogger
+        public class ConsoleLogWritter : ILogger
+        {
+            public void WriteError(string message)
+            {
+                Console.WriteLine(message);
+            }
+        }
+
+        public class FileLogWritter : ILogger
+        {
+            public void WriteError(string message)
+            {
+                File.WriteAllText("log.txt", message);
+            }
+        }
+
+        public static class File
+        {
+            public static void WriteAllText(string log, string message)
+            {
+                Console.WriteLine(log);
+                Console.WriteLine(message);
+            }
+        }
+
+        public class SeveralLogsWritter : ILogger
         {
             private ILogger[] _loggers;
 
@@ -74,15 +94,7 @@ namespace App2
             }
         }
 
-        class ConsoleLogWritter : ILogger
-        {
-            public void WriteError(string message)
-            {
-                Console.WriteLine(message);
-            }
-        }
-
-        class SecureLogWritter : ILogger
+        public class SecureLogWritter : ILogger
         {
             private ILogger _logger;
             private Day _day;
@@ -95,25 +107,8 @@ namespace App2
 
             public void WriteError(string message)
             {
-                if (_day.IsMatch())
+                if (_day.IsMatch)
                     _logger.WriteError(message);
-            }
-        }
-
-        class FileLogWritter : ILogger
-        {
-            public void WriteError(string message)
-            {
-                File.WriteAllText("log.txt", message);
-            }
-        }
-
-        static class File
-        {
-            public static void WriteAllText(string log, string message)
-            {
-                Console.WriteLine(log);
-                Console.WriteLine(message);
             }
         }
 
