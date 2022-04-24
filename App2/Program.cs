@@ -6,8 +6,14 @@ using System.Threading.Tasks;
 
 namespace App2
 {
-    class Weapon
+    class Program
     {
-        public void Shoot() { }
+        class CharacteristicsPlayer { }
+        class Gun { }
+        class Follower { }
+        class Counter
+        {
+            public IReadOnlyCollection<Unit> QuantityUnits { get; private set; }
+        }
     }
 }
