@@ -6,10 +6,8 @@ using System.Threading.Tasks;
 
 namespace App2
 {
-    class Program
+    class Weapon
     {
-        int armySize = 10;
-        int coins = 10;
-        string name = "Vladislav";
+        public void Shoot() { }
     }
 }
