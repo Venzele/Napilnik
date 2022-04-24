@@ -4,7 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace App1
+namespace App2
 {
-    
+    class Weapon
+    {
+        public void Shoot() { }
+    }
 }
