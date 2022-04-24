@@ -8,14 +8,13 @@ namespace App2
 {
     class Program
     {
-        public static int ClampNumber(int a, int b, int c)
+        public static int Enumerate(int[] array, int element)
         {
-            if (a < b)
-                return b;
-            else if (a > c)
-                return c;
-            else
-                return a;
+            for (int i = 0; i < array.Length; i++)
+                if (array[i] == element)
+                    return i;
+
+            return -1;
         }
     }
 }
