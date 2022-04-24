@@ -6,21 +6,37 @@ using System.Threading.Tasks;
 
 namespace App2
 {
-    class Program
+    class Player
     {
-        public static void GenerateNewObject()
+        public string Name { get; private set; }
+        public int Age { get; private set; }
+    }
+
+    class Mover
+    {
+        public float MovementDirectionX { get; private set; }
+        public float MovementDirectionY { get; private set; }
+        public float MovementSpeed { get; private set; }
+
+        public void Move()
         {
-            //Создание объекта на карте
+            //Do move
+        }
+    }
+
+    class Weapon
+    {
+        public float Cooldown { get; private set; }
+        public int Damage { get; private set; }
+
+        public void Attack()
+        {
+            //attack
         }
 
-        public static void RandomizeChance()
+        public bool IsReloading()
         {
-            _chance = Random.Range(0, 100);
-        }
-
-        public static int CountSalary(int hoursWorked)
-        {
-            return _hourlyRate * hoursWorked;
+            throw new NotImplementedException();
         }
     }
 }
