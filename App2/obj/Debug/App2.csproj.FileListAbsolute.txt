@@ -1,7 +1,0 @@
-C:\Users\Venzel\source\repos\App1\App2\bin\Debug\App2.exe.config
-C:\Users\Venzel\source\repos\App1\App2\bin\Debug\App2.exe
-C:\Users\Venzel\source\repos\App1\App2\bin\Debug\App2.pdb
-C:\Users\Venzel\source\repos\App1\App2\obj\Debug\App2.csproj.AssemblyReference.cache
-C:\Users\Venzel\source\repos\App1\App2\obj\Debug\App2.csproj.CoreCompileInputs.cache
-C:\Users\Venzel\source\repos\App1\App2\obj\Debug\App2.exe
-C:\Users\Venzel\source\repos\App1\App2\obj\Debug\App2.pdb
