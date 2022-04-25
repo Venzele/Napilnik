@@ -1,73 +1,108 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Data;
-using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Threading.Tasks;
-using System.Windows;
 
 namespace App2
 {
     class Program
     {
-        private void ButtonClick(object sender, EventArgs e)
+        static void Main(string[] args)
         {
-            if (_passportTextbox.Text.Trim() == "")
-                MessageBox.Show("Введите серию и номер паспорта");
-            else
-                ReportResultInput();
+            OrderForm orderForm = new OrderForm();
+            string systemId = orderForm.ShowForm();
+
+            PaySystem paySystem = new PaySystem(systemId);
+            PaymentHandler paymentHandler = new PaymentHandler(paySystem);
+
+            paySystem.ShowPaymentPay();
+            paymentHandler.ShowPaymentResult(systemId);
+        }
+    }
+
+    public enum PaymentType
+    {
+        Qiwi,
+        WebMoney,
+        Card
+    }
+
+    public class OrderForm
+    {
+        public string ShowForm()
+        {
+            Console.WriteLine("Мы принимаем: QIWI, WebMoney, Card");
+
+            //симуляция веб интерфейса
+            Console.WriteLine("Какое системой вы хотите совершить оплату?");
+            return Console.ReadLine().ToLower();
+        }
+    }
+
+    public class PaymentHandler
+    {
+        private PaySystem _paySystem;
+
+        public PaymentHandler(PaySystem paySystem)
+        {
+            _paySystem = paySystem;
         }
 
-        private void ReportResultInput()
+        public void ShowPaymentResult(string systemId)
         {
-            string rawData = _passportTextbox.Text.Trim().Replace(" ", string.Empty);
+            Console.WriteLine($"Вы оплатили с помощью {systemId}");
+            _paySystem.ShowPaymentResult();
+            Console.WriteLine("Оплата прошла успешно!");
+        }
+    }
 
-            if (rawData.Length < 10)
-                _textResult.Text = "Неверный формат серии или номера паспорта";
-            else
-                TryConnect(rawData);
+    public class PaySystem
+    {
+        private string _systemId;
+
+        public PaySystem(string systemId)
+        {
+            _systemId = systemId;
         }
 
-        private void TryConnect(string rawData)
+        public void ShowPaymentPay()
         {
-            string command = string.Format("select * from passports where num='{0}' limit 1;", (object)Format.ComputeSha256Hash(rawData));
-            string connection = string.Format("Data Source=" + Path.GetDirectoryName(Assembly.GetExecutingAssembly().Location) + "\\db.sqlite");
-
-            try
-            {
-                SQLiteConnection sqLiteConnection = new SQLiteConnection(connection);
-                sqLiteConnection.Open();
-                SQLiteDataAdapter sqLiteDataAdapter = new SQLiteDataAdapter(new SQLiteCommand(command, sqLiteConnection));
-                DataTable dataTable = new DataTable();
-                sqLiteDataAdapter.Fill(dataTable);
-                ReportResultConnect(dataTable);
-                sqLiteConnection.Close();
-            }
-            catch (SQLiteException exception)
-            {
-                if (exception.ErrorCode != 1)
-                    return;
-
-                MessageBox.Show("Файл db.sqlite не найден. Положите файл в папку вместе с exe.");
-            }
+            Console.WriteLine($"{GetMassage()} {_systemId}...");
         }
 
-        private void ReportResultConnect(DataTable dataTable)
+        public void ShowPaymentResult()
         {
-            if (dataTable.Rows.Count > 0)
-                GetVotingMessege(dataTable);
-            else
-                _textResult.Text = "Паспорт «" + _passportTextbox.Text + "» в списке участников дистанционного голосования НЕ НАЙДЕН";
+            Console.WriteLine($"Проверка платежа через {_systemId}...");
         }
 
-        private string GetVotingMessege(DataTable dataTable)
+        private string GetMassage()
         {
-            if (Convert.ToBoolean(dataTable.Rows[0].ItemArray[1]))
-                return _textResult.Text = "По паспорту «" + _passportTextbox.Text + "» доступ к бюллетеню на дистанционном электронном голосовании ПРЕДОСТАВЛЕН";
-            else
-                return _textResult.Text = "По паспорту «" + _passportTextbox.Text + "» доступ к бюллетеню на дистанционном электронном голосовании НЕ ПРЕДОСТАВЛЯЛСЯ";
+            if (_systemId == PaymentType.Qiwi.ToString().ToLower())
+                return "Перевод на страницу";
+
+            if (_systemId == PaymentType.WebMoney.ToString().ToLower())
+                return "Вызов API";
+
+            if (_systemId == PaymentType.Card.ToString().ToLower())
+                return "Вызов API банка эмитера карты";
+
+            throw new ArgumentOutOfRangeException(nameof(_systemId));
         }
+    }
+
+    public class Qiwi : PaySystem
+    {
+        public Qiwi(string systemId) : base(systemId) { }
+    }
+
+    public class WebMoney : PaySystem
+    {
+        public WebMoney(string systemId) : base(systemId) { }
+    }
+
+    public class Card : PaySystem
+    {
+        public Card(string systemId) : base(systemId) { }
     }
 }
