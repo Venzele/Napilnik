@@ -9,6 +9,6 @@ namespace App2
     class Program
     {
         public void Shoot(Player player) { }
-        public string Find(int index) { }
+        public string FindBy(int index) { }
     }
 }
