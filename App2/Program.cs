@@ -8,16 +8,7 @@ namespace App2
 {
     class Program
     {
-        public void Enable()
-        {
-            _enable = true;
-            _effects.StartEnableAnimation();
-        }
-
-        public void Disabled()
-        {
-            _enable = false;
-            _pool.Free(this);
-        }
+        public void Shoot(Player player) { }
+        public string Find(int index) { }
     }
 }
