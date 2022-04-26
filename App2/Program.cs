@@ -13,10 +13,9 @@ namespace App2
             OrderForm orderForm = new OrderForm();
             string systemId = orderForm.ShowForm();
 
-            PaySystem paySystem = new PaySystem(systemId);
-            PaymentHandler paymentHandler = new PaymentHandler(paySystem);
+            SetterPaySystem setterPaySystem = new SetterPaySystem();
+            PaymentHandler paymentHandler = new PaymentHandler(setterPaySystem.Create(systemId));
 
-            paySystem.ShowPaymentPay();
             paymentHandler.ShowPaymentResult(systemId);
         }
     }
@@ -51,58 +50,72 @@ namespace App2
 
         public void ShowPaymentResult(string systemId)
         {
+            _paySystem.ShowOutputResult();
             Console.WriteLine($"Вы оплатили с помощью {systemId}");
             _paySystem.ShowPaymentResult();
             Console.WriteLine("Оплата прошла успешно!");
         }
     }
 
+    public class SetterPaySystem
+    {
+        public PaySystem Create(string systemId)
+        {
+            {
+                if (systemId == PaymentType.Qiwi.ToString().ToLower())
+                    return new Qiwi();
+
+                if (systemId == PaymentType.WebMoney.ToString().ToLower())
+                    return new WebMoney();
+
+                if (systemId == PaymentType.Card.ToString().ToLower())
+                    return new Card();
+
+                throw new ArgumentOutOfRangeException(nameof(systemId));
+            }
+        }
+    }
+
     public class PaySystem
     {
-        private string _systemId;
+        protected string SystemId;
+        protected string Message;
 
-        public PaySystem(string systemId)
+        public void ShowOutputResult()
         {
-            _systemId = systemId;
-        }
-
-        public void ShowPaymentPay()
-        {
-            Console.WriteLine($"{GetMassage()} {_systemId}...");
+            Console.WriteLine($"{Message} {SystemId}...");
         }
 
         public void ShowPaymentResult()
         {
-            Console.WriteLine($"Проверка платежа через {_systemId}...");
-        }
-
-        private string GetMassage()
-        {
-            if (_systemId == PaymentType.Qiwi.ToString().ToLower())
-                return "Перевод на страницу";
-
-            if (_systemId == PaymentType.WebMoney.ToString().ToLower())
-                return "Вызов API";
-
-            if (_systemId == PaymentType.Card.ToString().ToLower())
-                return "Вызов API банка эмитера карты";
-
-            throw new ArgumentOutOfRangeException(nameof(_systemId));
+            Console.WriteLine($"Проверка платежа через {SystemId}...");
         }
     }
 
     public class Qiwi : PaySystem
     {
-        public Qiwi(string systemId) : base(systemId) { }
+        public Qiwi()
+        {
+            SystemId = PaymentType.Qiwi.ToString();
+            Message = "Перевод на страницу";
+        }
     }
 
     public class WebMoney : PaySystem
     {
-        public WebMoney(string systemId) : base(systemId) { }
+        public WebMoney()
+        {
+            SystemId = PaymentType.WebMoney.ToString();
+            Message = "Вызов API";
+        }
     }
 
     public class Card : PaySystem
     {
-        public Card(string systemId) : base(systemId) { }
+        public Card()
+        {
+            SystemId = PaymentType.Card.ToString();
+            Message = "Вызов API банка эмитера карты";
+        }
     }
 }
